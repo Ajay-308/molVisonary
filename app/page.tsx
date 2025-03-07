@@ -32,9 +32,9 @@ export default function LandingPage() {
           <Button
             asChild
             variant="outline"
-            className="border-emerald-400 text-emerald-400 hover:bg-emerald-400/10"
+            className="border-emerald-400 bg-inherit text-emerald-400 hover:bg-emerald-400/10 hover:text-white"
           >
-            <Link href="/home">Launch App</Link>
+            <Link href="/sign-in">Launch App</Link>
           </Button>
         </nav>
         <Button variant="ghost" size="icon" className="md:hidden">
@@ -155,7 +155,7 @@ export default function LandingPage() {
               size="lg"
               className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-8"
             >
-              <Link href="/home">
+              <Link href="/sign-in">
                 Get Started <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
@@ -163,7 +163,7 @@ export default function LandingPage() {
               asChild
               variant="outline"
               size="lg"
-              className="border-emerald-400 text-emerald-400 hover:bg-emerald-400/10"
+              className="border-emerald-400 bg-inherit hover:text-white text-emerald-400 hover:bg-emerald-400/10"
             >
               <Link href="#features">Learn More</Link>
             </Button>
@@ -219,7 +219,7 @@ export default function LandingPage() {
             size="lg"
             className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-8"
           >
-            <Link href="/home">
+            <Link href="/sign-in">
               Launch App <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
