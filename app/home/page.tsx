@@ -1,48 +1,27 @@
 "use client";
-
-import type React from "react";
-
-import { useState } from "react";
+import react, { useState } from "react";
 import {
-  AtomIcon,
-  Beaker,
-  BookOpen,
-  ChevronDown,
   Download,
-  FileText,
-  History,
-  Home,
-  Layers,
   Maximize2,
   Minimize2,
   RotateCcw,
   Save,
-  Search,
-  Settings,
   Share2,
-  Star,
-  User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { MoleculeViewer } from "@/components/molecule-viewer";
 import { MoleculeInfo } from "@/components/molecule-info";
+import Sidebar from "@/components/sidebar";
 
 export default function AppPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentMolecule, setCurrentMolecule] = useState("Benzene");
   const [is3DMode, setIs3DMode] = useState(true);
+  const { user, isLoaded, isSignedIn } = useUser();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,101 +34,7 @@ export default function AppPage() {
   return (
     <div className="flex h-screen bg-black text-white overflow-hidden">
       {/* Sidebar */}
-      <div className="w-64 border-r border-emerald-900 flex flex-col">
-        <div className="p-4 border-b border-emerald-900 flex items-center gap-2">
-          <AtomIcon className="h-6 w-6 text-emerald-400" />
-          <span className="text-xl font-bold">MolVisonary</span>
-        </div>
-
-        <div className="p-4">
-          <form onSubmit={handleSearch} className="relative">
-            <Input
-              type="text"
-              placeholder="Search molecules..."
-              className="bg-emerald-950/50 border-emerald-800 focus-visible:ring-emerald-500 text-white placeholder:text-emerald-700"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button
-              type="submit"
-              size="icon"
-              variant="ghost"
-              className="absolute right-0 top-0 h-full text-emerald-500 hover:text-emerald-400 hover:bg-transparent"
-            >
-              <Search className="h-4 w-4" />
-            </Button>
-          </form>
-        </div>
-
-        <nav className="flex-1 overflow-auto py-4">
-          <div className="px-4 mb-2 text-xs font-semibold text-emerald-500 uppercase tracking-wider">
-            Main
-          </div>
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <Home className="mr-2 h-4 w-4" />
-            Dashboard
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <Star className="mr-2 h-4 w-4" />
-            Favorites
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <History className="mr-2 h-4 w-4" />
-            Recent
-          </Button>
-
-          <div className="px-4 mt-6 mb-2 text-xs font-semibold text-emerald-500 uppercase tracking-wider">
-            Libraries
-          </div>
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <Beaker className="mr-2 h-4 w-4" />
-            Organic
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <Layers className="mr-2 h-4 w-4" />
-            Inorganic
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <FileText className="mr-2 h-4 w-4" />
-            Biochemical
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <BookOpen className="mr-2 h-4 w-4" />
-            Educational
-          </Button>
-        </nav>
-
-        <div className="p-4 border-t border-emerald-900">
-          <Button
-            variant="ghost"
-            className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-          >
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </Button>
-        </div>
-      </div>
+      <Sidebar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -192,41 +77,10 @@ export default function AppPage() {
 
             <div className="ml-4 h-8 w-px bg-emerald-800"></div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1">
-                  <Avatar className="h-8 w-8 border border-emerald-800">
-                    <AvatarFallback className="bg-emerald-900 text-emerald-200">
-                      JD
-                    </AvatarFallback>
-                  </Avatar>
-                  <ChevronDown className="h-4 w-4 text-emerald-400" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-56 bg-black border-emerald-900"
-              >
-                <DropdownMenuItem className="focus:bg-emerald-900/40 focus:text-white">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="focus:bg-emerald-900/40 focus:text-white">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-emerald-900" />
-                <DropdownMenuItem className="focus:bg-emerald-900/40 focus:text-white">
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <UserButton />
           </div>
         </header>
-
-        {/* Main Content Area */}
         <div className="flex-1 overflow-hidden flex">
-          {/* Molecule Viewer */}
           <div className="flex-1 relative bg-gradient-to-b from-emerald-950/30 to-black">
             <div className="absolute top-4 left-4 z-10 flex gap-2">
               <Button
