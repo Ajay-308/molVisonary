@@ -1,136 +1,190 @@
 "use client";
-import React, { useState } from "react";
-import {
-  AtomIcon,
-  Beaker,
-  BookOpen,
-  ChevronDown,
-  Download,
-  FileText,
-  History,
-  Home,
-  Layers,
-  Maximize2,
-  Minimize2,
-  RotateCcw,
-  Save,
-  Search,
-  Settings,
-  Share2,
-  Star,
-  User,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import Link, { LinkProps } from "next/link";
+import React, { useState, createContext, useContext } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { IconMenu2, IconX } from "@tabler/icons-react";
 
-import { Input } from "@/components/ui/input";
-const sidebar = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentMolecule, setCurrentMolecule] = useState("Benzene");
+interface Links {
+  label: string;
+  href: string;
+  icon: React.JSX.Element | React.ReactNode;
+}
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setCurrentMolecule(searchQuery);
-      setSearchQuery("");
-    }
-  };
+interface SidebarContextProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  animate: boolean;
+}
+
+const SidebarContext = createContext<SidebarContextProps | undefined>(
+  undefined
+);
+
+export const useSidebar = () => {
+  const context = useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebar must be used within a SidebarProvider");
+  }
+  return context;
+};
+
+export const SidebarProvider = ({
+  children,
+  open: openProp,
+  setOpen: setOpenProp,
+  animate = true,
+}: {
+  children: React.ReactNode;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  animate?: boolean;
+}) => {
+  const [openState, setOpenState] = useState(false);
+
+  const open = openProp !== undefined ? openProp : openState;
+  const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState;
+
   return (
-    <div className="w-64 border-r border-emerald-900 flex flex-col">
-      <div className="p-4 border-b border-emerald-900 flex items-center gap-2">
-        <AtomIcon className="h-6 w-6 text-emerald-400" />
-        <span className="text-xl font-bold">MolVisonary</span>
-      </div>
-
-      <div className="p-4">
-        <form onSubmit={handleSearch} className="relative">
-          <Input
-            type="text"
-            placeholder="Search molecules..."
-            className="bg-emerald-950/50 border-emerald-800 focus-visible:ring-emerald-500 text-white placeholder:text-emerald-700"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Button
-            type="submit"
-            size="icon"
-            variant="ghost"
-            className="absolute right-0 top-0 h-full text-emerald-500 hover:text-emerald-400 hover:bg-transparent"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
-        </form>
-      </div>
-
-      <nav className="flex-1 overflow-auto py-4">
-        <div className="px-4 mb-2 text-xs font-semibold text-emerald-500 uppercase tracking-wider">
-          Main
-        </div>
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <Home className="mr-2 h-4 w-4" />
-          Dashboard
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <Star className="mr-2 h-4 w-4" />
-          Favorites
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <History className="mr-2 h-4 w-4" />
-          Recent
-        </Button>
-
-        <div className="px-4 mt-6 mb-2 text-xs font-semibold text-emerald-500 uppercase tracking-wider">
-          Libraries
-        </div>
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <Beaker className="mr-2 h-4 w-4" />
-          Organic
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <Layers className="mr-2 h-4 w-4" />
-          Inorganic
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <FileText className="mr-2 h-4 w-4" />
-          Biochemical
-        </Button>
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <BookOpen className="mr-2 h-4 w-4" />
-          Educational
-        </Button>
-      </nav>
-
-      <div className="p-4 border-t border-emerald-900">
-        <Button
-          variant="ghost"
-          className="w-full justify-start px-4 py-2 text-emerald-300 hover:text-white hover:bg-emerald-900/40"
-        >
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
-        </Button>
-      </div>
-    </div>
+    <SidebarContext.Provider value={{ open, setOpen, animate: animate }}>
+      {children}
+    </SidebarContext.Provider>
   );
 };
 
-export default sidebar;
+export const Sidebar = ({
+  children,
+  open,
+  setOpen,
+  animate,
+}: {
+  children: React.ReactNode;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+  animate?: boolean;
+}) => {
+  return (
+    <SidebarProvider open={open} setOpen={setOpen} animate={animate}>
+      {children}
+    </SidebarProvider>
+  );
+};
+
+export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+  return (
+    <>
+      <DesktopSidebar {...props} />
+      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+    </>
+  );
+};
+
+export const DesktopSidebar = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<typeof motion.div>) => {
+  const { open, setOpen, animate } = useSidebar();
+  return (
+    <>
+      <motion.div
+        className={cn(
+          "h-full px-4 py-4 hidden  md:flex md:flex-col bg-neutral-100 dark:bg-neutral-800 w-[300px] shrink-0",
+          className
+        )}
+        animate={{
+          width: animate ? (open ? "300px" : "60px") : "300px",
+        }}
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        {...props}
+      >
+        {children}
+      </motion.div>
+    </>
+  );
+};
+
+export const MobileSidebar = ({
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div">) => {
+  const { open, setOpen } = useSidebar();
+  return (
+    <>
+      <div
+        className={cn(
+          "h-10 px-4 py-4 flex flex-row md:hidden  items-center justify-between bg-neutral-100 dark:bg-neutral-800 w-full"
+        )}
+        {...props}
+      >
+        <div className="flex justify-end z-20 w-full">
+          <IconMenu2
+            className="text-neutral-800 dark:text-neutral-200"
+            onClick={() => setOpen(!open)}
+          />
+        </div>
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              initial={{ x: "-100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "-100%", opacity: 0 }}
+              transition={{
+                duration: 0.3,
+                ease: "easeInOut",
+              }}
+              className={cn(
+                "fixed h-full w-full inset-0 bg-white dark:bg-neutral-900 p-10 z-[100] flex flex-col justify-between",
+                className
+              )}
+            >
+              <div
+                className="absolute right-10 top-10 z-50 text-neutral-800 dark:text-neutral-200"
+                onClick={() => setOpen(!open)}
+              >
+                <IconX />
+              </div>
+              {children}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
+  );
+};
+
+export const SidebarLink = ({
+  link,
+  className,
+  ...props
+}: {
+  link: Links;
+  className?: string;
+  props?: LinkProps;
+}) => {
+  const { open, animate } = useSidebar();
+  return (
+    <Link
+      href={link.href}
+      className={cn(
+        "flex items-center justify-start gap-2  group/sidebar py-2",
+        className
+      )}
+      {...props}
+    >
+      {link.icon}
+
+      <motion.span
+        animate={{
+          display: animate ? (open ? "inline-block" : "none") : "inline-block",
+          opacity: animate ? (open ? 1 : 0) : 1,
+        }}
+        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+      >
+        {link.label}
+      </motion.span>
+    </Link>
+  );
+};
